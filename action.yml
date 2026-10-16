@@ -1,0 +1,55 @@
+name: Publish Acode plugin
+description: Publish a plugin zip to the Acode plugin store (acode.app) using an Acode API key.
+author: Acode Foundation
+branding:
+  icon: upload-cloud
+  color: blue
+
+inputs:
+  api-key:
+    description: Acode API key with the "Publish updates" permission (and "Submit plugins" to create new ones). Pass it from a secret.
+    required: true
+  zip:
+    description: Path to the built plugin zip.
+    required: false
+    default: plugin.zip
+  changelogs:
+    description: Release notes for this version. Sent as plain text.
+    required: false
+    default: ''
+  create-if-missing:
+    description: Submit the plugin as new when it doesn't exist yet. Needs the "Submit plugins" permission.
+    required: false
+    default: 'false'
+  api-url:
+    description: Base URL of the Acode website. Only change this for testing.
+    required: false
+    default: https://acode.app
+
+outputs:
+  plugin-id:
+    description: The plugin id read from plugin.json.
+    value: ${{ steps.publish.outputs.plugin-id }}
+  version:
+    description: The version read from plugin.json.
+    value: ${{ steps.publish.outputs.version }}
+  result:
+    description: '"published" (live now), "review" (held for admin review) or "submitted" (new plugin waiting for approval).'
+    value: ${{ steps.publish.outputs.result }}
+  message:
+    description: The message returned by acode.app.
+    value: ${{ steps.publish.outputs.message }}
+
+runs:
+  using: composite
+  steps:
+    - id: publish
+      shell: bash
+      # Inputs go through env, never into the script text, so they can't inject shell code.
+      env:
+        INPUT_API_KEY: ${{ inputs.api-key }}
+        INPUT_ZIP: ${{ inputs.zip }}
+        INPUT_CHANGELOGS: ${{ inputs.changelogs }}
+        INPUT_CREATE_IF_MISSING: ${{ inputs.create-if-missing }}
+        INPUT_API_URL: ${{ inputs.api-url }}
+      run: bash "$GITHUB_ACTION_PATH/publish.sh"
