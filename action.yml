@@ -14,7 +14,7 @@ inputs:
     required: false
     default: plugin.zip
   changelogs:
-    description: Release notes for this version. Sent as plain text.
+    description: Optional. Leave empty to use the changelog file inside the zip (the file named by "changelogs" in plugin.json, or changelogs.md). When set, this text is used instead of that file.
     required: false
     default: ''
   create-if-missing:

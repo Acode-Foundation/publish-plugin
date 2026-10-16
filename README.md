@@ -39,7 +39,6 @@ jobs:
       - uses: Acode-Foundation/publish-plugin@v1
         with:
           api-key: ${{ secrets.ACODE_API_KEY }}
-          changelogs: ${{ github.event.release.body }}
 ```
 
 Bump `version` in `plugin.json` before each release. acode.app rejects an upload whose version isn't greater than the live one.
@@ -50,9 +49,27 @@ Bump `version` in `plugin.json` before each release. acode.app rejects an upload
 | --- | --- | --- |
 | `api-key` | required | Your Acode API key. Always pass it from a secret. |
 | `zip` | `plugin.zip` | Path to the built plugin zip. The official templates write `plugin.zip` at the repo root. |
-| `changelogs` | | Release notes for this version, sent as plain text. |
+| `changelogs` | | Optional. Leave it out to use the changelog inside the zip. Set it to use different text instead. See [Changelogs](#changelogs). |
 | `create-if-missing` | `false` | Submit the plugin as new if it doesn't exist yet. Needs the **Submit plugins** permission. Paid plugins must be submitted from the website. |
 | `api-url` | `https://acode.app` | Only change this for testing. Plain `http` is refused except for `localhost`. |
+
+## Changelogs
+
+You usually don't need the `changelogs` input. acode.app reads the changelog from your plugin zip, just like a website upload:
+
+- the file named by `changelogs` in `plugin.json`, or
+- `changelogs.md` at the root of the zip if `plugin.json` doesn't name one.
+
+The official templates already set `changelogs` in `plugin.json` and pack that file into the zip, so keeping it up to date is enough.
+
+Set `changelogs` only when you want to publish different text for this release. It then replaces the zip's changelog, for example to use the GitHub release notes:
+
+```yaml
+      - uses: Acode-Foundation/publish-plugin@v1
+        with:
+          api-key: ${{ secrets.ACODE_API_KEY }}
+          changelogs: ${{ github.event.release.body }}
+```
 
 ## Outputs
 
