@@ -35,7 +35,7 @@ run() {
   shift 2
   : >"$work/output"
   (
-    cd "$work"
+    cd "$work" || exit 1
     env -i PATH="$PATH" HOME="$HOME" GITHUB_OUTPUT="$work/output" \
       INPUT_API_KEY="$key" INPUT_API_URL="http://127.0.0.1:$port" "$@" \
       bash "$root/publish.sh"
