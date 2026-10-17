@@ -92,6 +92,12 @@ run "$t" 0 INPUT_CREATE_IF_MISSING=true &&
   check "$t" 'used POST' grep -q '"method":"POST"' "$work/requests.log" &&
   pass "$t"
 
+t='shows server warnings as GitHub warnings'
+start_server missingFullKey
+run "$t" 0 INPUT_CREATE_IF_MISSING=true &&
+  check "$t" 'warning annotation' grep -q '::warning title=Acode publish::This API key already covers 100 plugins' "$work/stdout" &&
+  pass "$t"
+
 t='fails on a missing plugin by default and says how to fix it'
 start_server missing
 run "$t" 1 &&

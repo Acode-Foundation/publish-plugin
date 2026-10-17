@@ -55,7 +55,7 @@ echo "Publishing $plugin_id $version to $api_url"
 body_file="$(mktemp)"
 trap 'rm -f "$body_file"' EXIT
 
-# Sets http_status, error_code, under_review and message.
+# Sets http_status, error_code, under_review, message and warning.
 upload() {
   local method="$1"
   local args=(
@@ -78,13 +78,15 @@ upload() {
     read -r error_code
     read -r under_review
     read -r message
+    read -r warning
   } < <(node -e '
     let r = {};
     try { r = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")); } catch {}
     const line = (v) => String(v ?? "").replace(/\s+/g, " ").trim();
     console.log(line(r.code));
     console.log(r.review === true ? "true" : "false");
-    console.log(line(r.error || r.message));' "$body_file")
+    console.log(line(r.error || r.message));
+    console.log(line(r.warning));' "$body_file")
 }
 
 result=published
@@ -108,6 +110,7 @@ if [[ "$result" == published && "$under_review" == true ]]; then result=review; 
 
 set_output result "$result"
 set_output message "$message"
+if [[ -n "$warning" ]]; then echo "::warning title=Acode publish::$warning"; fi
 
 case "$result" in
   published) summary="$plugin_id $version is live." ;;

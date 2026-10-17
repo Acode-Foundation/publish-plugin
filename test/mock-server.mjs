@@ -12,6 +12,10 @@ const responses = {
     PUT: [403, { error: 'Plugin "test.plugin" doesn\'t exist yet. Submit it with POST /api/plugin first.', code: 'plugin_not_found' }],
     POST: [200, { message: 'Plugin uploaded successfully' }],
   },
+  missingFullKey: {
+    PUT: [403, { error: 'Plugin "test.plugin" doesn\'t exist yet. Submit it with POST /api/plugin first.', code: 'plugin_not_found' }],
+    POST: [200, { message: 'Plugin uploaded successfully', warning: 'This API key already covers 100 plugins. Create a new key that includes it.' }],
+  },
   denied: { PUT: [403, { error: 'This API key cannot publish "test.plugin".', code: 'plugin_not_allowed' }] },
   invalid: { PUT: [401, { error: 'Invalid API key.' }] },
 };
